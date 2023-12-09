@@ -3,7 +3,7 @@ name: Deploy Code to EC2 Server
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-and-push:
