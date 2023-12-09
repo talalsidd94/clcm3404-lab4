@@ -3,11 +3,11 @@ name: Deploy Code to EC2 Server
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-push:
-    runs-on: amazonlinux:2
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -57,7 +57,7 @@ jobs:
 
   deploy-to-ec2:
     needs: build-and-push
-    runs-on: amazonlinux:2
+    runs-on: ubuntu-latest
 
     steps:
       - name: Executing remote ssh commands using ssh key
@@ -80,7 +80,7 @@ jobs:
   
   testing:
     needs: deploy-to-ec2
-    runs-on: amazonlinux:2
+    runs-on: ubuntu-latest
 
     steps:
       - name: Run Site Accessibility Test
