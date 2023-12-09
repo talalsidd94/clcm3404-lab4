@@ -16,11 +16,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@master
 
-      - name: Install Docker
-        run: sudo yum install docker -y
-
-      - name: Start Docker service
-        run: sudo service docker start
+      - 
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
