@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,9 +24,9 @@ jobs:
           docker buildx create --use
           docker buildx inspect --bootstrap
           docker buildx build --load -t my-doc-app:latest .
-          docker tag my-doc-app:latest ${{ secrets.DOCKERHUB_USERNAME }}/my-doc-app:latest
+          docker tag my-doc-app:latest ${{ secrets.DOCKERHUB_USERNAME }}/lab4:latest
           echo $(docker images)
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-doc-app:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/lab4:latest
 
       - name: Check Docker Image Build
         run: |
@@ -39,7 +39,7 @@ jobs:
 
       - name: Check Docker Image Pushed
         run: |
-          if docker manifest inspect ${{ secrets.DOCKERHUB_USERNAME }}/my-doc-app:latest &> /dev/null; then
+          if docker manifest inspect ${{ secrets.DOCKERHUB_USERNAME }}/lab4:latest &> /dev/null; then
             echo "Docker image pushed to Docker Hub successfully. Test passed!"
           else
             echo "Docker image not found on Docker Hub. Test failed."
@@ -49,8 +49,8 @@ jobs:
       - name: Logout from Docker Hub
         run: docker logout
 
-  deploy-to-ec2:
-    needs: build-and-push
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -68,12 +68,12 @@ jobs:
                 docker rm $existing_container
             fi
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-doc-app:latest
-            docker run -d -p 80:80 --name my-doc-app ${{ secrets.DOCKERHUB_USERNAME }}/my-doc-app:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/lab4:latest
+            docker run -d -p 80:80 --name my-doc-app ${{ secrets.DOCKERHUB_USERNAME }}/lab4:latest
             docker image prune -f
   
   testing:
-    needs: deploy-to-ec2
+    needs: deploy
     runs-on: ubuntu-latest
 
     steps:
